@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
+#include <time.h>
 
 struct stat {
 	char name[8];
@@ -106,6 +107,18 @@ get_loads(struct stats as, struct stats bs, struct loads loads)
 
 void swap(struct stats * a, struct stats * b) { struct stats t = *a; *a = *b; *b = t; }
 
+double
+get_time()
+{
+	struct timespec spec;
+	int rv = timespec_get(&spec, TIME_UTC);
+	if (rv < 0 || errno) {
+		perror("clock_gettime()");
+		exit(errno ? -errno : 1);
+	}
+	return spec.tv_sec + 1e-9 * spec.tv_nsec;
+}
+
 int
 main(int argc, char ** argv)
 {
@@ -139,12 +152,15 @@ main(int argc, char ** argv)
 	struct loads loads = { 0 };
 
 	as = get_stats(as);
-	for (long i = 0; repeat < 0 || i < repeat; i++) {
-		usleep((useconds_t)(period * 1000000));
+	double start = get_time();
+	for (long i = 1; repeat < 0 || i <= repeat; i++) {
+		double delay = start + i * period - get_time();
+		if (delay > 0)
+			usleep((useconds_t)(delay * 1000000));
 		bs = get_stats(bs);
 		loads = get_loads(as, bs, loads);
-		for (ssize_t i = 0; i < loads.size; i++)
-			printf("%8.6lf ", loads.data[i].load);
+		for (ssize_t j = 0; j < loads.size; j++)
+			printf("%8.6lf ", loads.data[j].load);
 		swap(&as, &bs);
 		fputc('\n', stdout);
 	}
