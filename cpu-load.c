@@ -112,7 +112,7 @@ get_time()
 {
 	struct timespec spec;
 	int rv = timespec_get(&spec, TIME_UTC);
-	if (rv < 0 || errno) {
+	if (rv == 0 || errno) {
 		perror("clock_gettime()");
 		exit(errno ? -errno : 1);
 	}
