@@ -6,7 +6,7 @@ cpu-load: cpu-load.c
 clean:
 	rm -f cpu-load
 
-install: all
+install: cpu-load
 	install -d ${DESTDIR}/usr/bin
 	install cpu-load ${DESTDIR}/usr/bin
 
