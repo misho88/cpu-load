@@ -159,9 +159,11 @@ main(int argc, char ** argv)
 			usleep((useconds_t)(delay * 1000000));
 		bs = get_stats(bs);
 		loads = get_loads(as, bs, loads);
+		swap(&as, &bs);
+
 		for (ssize_t j = 0; j < loads.size; j++)
 			printf("%8.6lf ", loads.data[j].load);
-		swap(&as, &bs);
 		fputc('\n', stdout);
+		fflush(stdout);
 	}
 }
