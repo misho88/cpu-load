@@ -157,6 +157,8 @@ main(int argc, char ** argv)
 		double delay = start + i * period - get_time();
 		if (delay > 0)
 			usleep((useconds_t)(delay * 1000000));
+		else
+			start = get_time();
 		bs = get_stats(bs);
 		loads = get_loads(as, bs, loads);
 		swap(&as, &bs);
