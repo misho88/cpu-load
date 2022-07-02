@@ -155,10 +155,13 @@ main(int argc, char ** argv)
 	double start = get_time();
 	for (long i = 1; repeat < 0 || i <= repeat; i++) {
 		double delay = start + i * period - get_time();
-		if (delay > 0)
+		if (delay > 0) {
 			usleep((useconds_t)(delay * 1000000));
-		else
+		}
+		else {
 			start = get_time();
+			i = 0;
+		}
 		bs = get_stats(bs);
 		loads = get_loads(as, bs, loads);
 		swap(&as, &bs);
